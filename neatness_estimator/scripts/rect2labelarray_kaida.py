@@ -5,7 +5,7 @@ import rospy
 
 import message_filters
 from jsk_recognition_msgs.msg import Rect, RectArray
-from jsk_recognition_msgs.msg import ClassificationResult
+from jsk_recognition_msgs.msg import LabelArray
 
 try:
     from rect_projector_msgs.msg import Scored2DBox, Scored2DBoxArray
@@ -17,7 +17,6 @@ except:
 class Rect2LabeledArray():
 
     def __init__(self):
-        self.pub = rospy.Publisher('/kaida/rect/boxes', Scored2DBoxArray, queue_size=1)
         self.subscribe()
 
     def subscribe(self):
@@ -26,17 +25,20 @@ class Rect2LabeledArray():
         sub_box = message_filters.Subscriber(
             '/mask_rcnn_instance_segmentation/output/rects', RectArray, queue_size=queue_size)
         sub_class = message_filters.Subscriber(
-            '/mask_rcnn_instance_segmentation/output/class', ClassificationResult, queue_size=queue_size)
+            '/mask_rcnn_instance_segmentation/output/labels', LabelArray, queue_size=queue_size)
 
         self.subs = [sub_box, sub_class]
         sync = message_filters.TimeSynchronizer(
             fs=self.subs, queue_size=queue_size)
         sync.registerCallback(self.printMsg)
 
-    def printMsg(self, boxes_msg, classes_msg):
-        for rect in boxes_msg.rects:
-            print(rect.x)
-            print(rect.y)
+    def printMsg(self, boxes_msg, labels_msg):
+        for rect, label in zip(boxes_msg.rects, labels_msg.labels):
+            print("search coffee")
+            if(label.name == "coffee"):
+                print("find coffee")
+                print(rect.x)
+                print(rect.y)
 
 
 if __name__ == '__main__':
