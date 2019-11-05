@@ -1,0 +1,10 @@
+<launch>
+  <arg name="input_image" default="/openni_camera/rgb/image_raw" />
+  <arg name="input_rect" default="/ssd_donbe_detector/rect" />
+
+  <node name="cluster_poinrt_indices_publisher" pkg="neatness_estimator" type="cluster_point_indices_publisher.py">
+    <remap from="~input_image" to="$(arg input_image)" />
+    <remap from="~input_rect" to="$(arg input_image)" />
+  </node>
+
+</launch>
