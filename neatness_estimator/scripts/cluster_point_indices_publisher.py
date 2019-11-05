@@ -75,24 +75,24 @@ def one_shot_subscribe(topic_name, mclass=None,
 
 
 class ClusterPointIndicesPublisher():
-		def __init__(self):
-				self.pub_indices = rospy.Publisher("~output", ClusterPointIndices, queue_size=1)
-				self.image = one_shot_subscribe("~input_image", Image)
-				sub_rect = rospy.Subscriber("~input_rect", RectArray, self.indices_publisher)
+    def __init__(self):
+        self.pub_indices = rospy.Publisher("~output", ClusterPointIndices, queue_size=1)
+        self.image = one_shot_subscribe("~input_image", Image)
+        sub_rect = rospy.Subscriber("~input_rect", RectArray, self.indices_publisher)
 
-		def indices_publisher(self, msg):
-				msg_indices = ClusterPointIndices(header=msg.header)
-				for rect in msg.rects:
-						H = self.image.shape[0]
-						W = self.image.shape[1]
-						bbox = [rect.y, rect.x, rect.height+rect.y, rect.width+rect.x]
-						indices = np.arange(H * W).reshape(H, W)[bbox[0]:bbox[2],bbox[1]:bbox[3]].reshape(-1)
-						indices_msg = PointIndices(header=msg.header, indices=indices)
-						msg_indices.cluster_indices.append(indices_msg)
-				self.pub_indices.publish(msg_indices)
+    def indices_publisher(self, msg):
+        msg_indices = ClusterPointIndices(header=msg.header)
+        for rect in msg.rects:
+            H = self.image.shape[0]
+            W = self.image.shape[1]
+            bbox = [rect.y, rect.x, rect.height+rect.y, rect.width+rect.x]
+            indices = np.arange(H * W).reshape(H, W)[bbox[0]:bbox[2],bbox[1]:bbox[3]].reshape(-1)
+            indices_msg = PointIndices(header=msg.header, indices=indices)
+            msg_indices.cluster_indices.append(indices_msg)
+        self.pub_indices.publish(msg_indices)
 
 
 if __name__ == "__main__":
-		rospy.init_node("cluster_points_indices_publisher")
-		indices = ClusterPointIndicesPublisher()
-		rospy.spin()
+    rospy.init_node("cluster_points_indices_publisher")
+    indices = ClusterPointIndicesPublisher()
+    rospy.spin()
