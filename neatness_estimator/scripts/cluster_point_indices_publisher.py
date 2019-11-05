@@ -83,8 +83,8 @@ class ClusterPointIndicesPublisher():
     def indices_publisher(self, msg):
         msg_indices = ClusterPointIndices(header=msg.header)
         for rect in msg.rects:
-            H = self.image.shape[0]
-            W = self.image.shape[1]
+            H = self.image.height
+            W = self.image.width
             bbox = [rect.y, rect.x, rect.height+rect.y, rect.width+rect.x]
             indices = np.arange(H * W).reshape(H, W)[bbox[0]:bbox[2],bbox[1]:bbox[3]].reshape(-1)
             indices_msg = PointIndices(header=msg.header, indices=indices)
